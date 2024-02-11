@@ -1,1 +1,58 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+#define MAX_SIZE 100
+
+int precedence(char operator) {
+    if (operator == '+' || operator == '-')
+        return 1;
+    else if (operator == '*' || operator == '/')
+        return 2;
+    else
+        return 0;
+}
+
+void infix_to_postfix(char infix_expr[], char postfix_expr[]) {
+    char stack[MAX_SIZE];
+    int top = -1;
+    int i, j;
+    
+    for (i = 0, j = 0; infix_expr[i] != '\0'; i++) {
+        if (isalnum(infix_expr[i])) { 
+            postfix_expr[j++] = infix_expr[i];
+        } else if (infix_expr[i] == '(') {
+            stack[++top] = infix_expr[i];
+        } else if (infix_expr[i] == ')') {
+            while (top != -1 && stack[top] != '(') {
+                postfix_expr[j++] = stack[top--];
+            }
+            top--;  '('
+        } else { // Operator
+            while (top != -1 && precedence(stack[top]) >= precedence(infix_expr[i])) {
+                postfix_expr[j++] = stack[top--];
+            }
+            stack[++top] = infix_expr[i];
+        }
+    }
+    
+    while (top != -1) {
+        postfix_expr[j++] = stack[top--];
+    }
+    postfix_expr[j] = '\0';
+}
+
+int main() {
+    char infix_expression[MAX_SIZE];
+    char postfix_expression[MAX_SIZE];
+    
+    printf("Enter the infix expression: ");
+    scanf("%s", infix_expression);
+    
+    infix_to_postfix(infix_expression, postfix_expression);
+    
+    printf("Infix Expression: %s\n", infix_expression);
+    printf("Postfix Expression: %s\n", postfix_expression);
+    
+    return 0;
+}
